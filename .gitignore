@@ -1,0 +1,19 @@
+# Common
+ownerproof.txt
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+input.txt
+
+# Rust
+target
+
+# JavaScript
+node_modules
+dist
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
