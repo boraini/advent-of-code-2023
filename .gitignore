@@ -17,3 +17,12 @@ dist
 *.njsproj
 *.sln
 *.sw?
+
+# Kodit
+*.csv
+dist.kdt
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class

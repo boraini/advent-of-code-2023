@@ -1,0 +1,208 @@
+// variable input is a table
+// variable rows and cols are numbers
+
+set sum 0
+
+set r 0
+for main_row main_row_end r rows
+    set in_number 0
+    set num_start 0
+    set num_end 0
+
+    set c 0
+    for main_col main_col_end c cols
+        get input r c
+        set current_char @save
+        // say current_char
+        // say " "
+
+        call test_for_digit current_char
+        if @save main_in_number main_not_in_number
+        label main_in_number
+            // say "main in number\n"
+            sum 1 - in_number
+            if @save main_enter_number main_condition_end
+            label main_enter_number
+                set in_number 1
+                set num_start c
+        goto main_condition_end
+        label main_not_in_number
+            // say "main not in number\n"
+            if in_number main_exit_number main_condition_end
+            label main_exit_number
+                set in_number 0
+                set num_end c
+                call handle_number input rows cols r num_start num_end
+                sum sum + @save
+                set sum @save
+        label main_condition_end
+    continue main_col
+    label main_col_end
+
+    if in_number left_in_number left_in_number_end
+    label left_in_number
+        set in_number 0
+        set num_end cols
+        call handle_number input rows cols r num_start num_end
+    label left_in_number_end
+continue main_row
+label main_row_end
+
+// say "The sum is: "
+// say sum
+// say "\n"
+goto end
+
+function handle_number input rows cols r start end
+    // will be set to 1 if we are adding the number to the sum
+    set include_number 0
+
+    // find the horizontal bounds for symbol checking
+    set h_start 0
+    set h_end cols
+
+    sum start - 1
+    set cand_h_start @save
+    sum end + 1
+    set cand_h_end @save
+
+    sum cand_h_start > h_start
+    if @save h_start_replace h_start_replace_end
+    label h_start_replace
+        set h_start cand_h_start
+    label h_start_replace_end
+
+    sum cand_h_end < h_end
+    if @save h_end_replace h_end_replace_end
+    label h_end_replace
+        set h_end cand_h_end
+    label h_end_replace_end
+
+    sum r - 1
+    set r_above @save
+
+    sum r + 1
+    set r_below @save
+
+    // check the row above for symbols
+    sum r_above >= 0
+    if @save check_r_above check_r_above_end
+    label check_r_above
+        set c h_start
+        for r_above_loop check_r_above_end c h_end
+            get input r_above c
+            call test_for_symbol @save
+            if @save r_above_symbol r_above_symbol_end
+            label r_above_symbol
+                set include_number 1
+            label r_above_symbol_end
+        continue r_above_loop
+    label check_r_above_end
+
+    // check the row below for symbols
+    sum r_below < rows
+    if @save check_r_below check_r_below_end
+    label check_r_below
+        set c h_start
+        for r_below_loop check_r_below_end c h_end
+            get input r_below c
+            call test_for_symbol @save
+            if @save r_below_symbol r_below_symbol_end
+            label r_below_symbol
+                set include_number 1
+            label r_below_symbol_end
+        continue r_below_loop
+    label check_r_below_end
+
+    // check left and right
+    get input r h_start
+    call test_for_symbol @save
+    if @save symbol_on_left symbol_on_left_end
+    label symbol_on_left
+        set include_number 1
+    label symbol_on_left_end
+
+    sum h_end - 1
+    get input r @save
+    call test_for_symbol @save
+    if @save symbol_on_right symbol_on_right_end
+    label symbol_on_right
+        set include_number 1
+    label symbol_on_right_end
+
+    // print the number if included
+    if include_number handle_print handle_print_end
+    label handle_print
+        call print_number input rows cols r start end
+    label handle_print_end
+    return 0
+
+function test_for_digit char
+    sum char == "0"
+    if @save digit_yes digit_no_0
+    label digit_no_0
+
+    sum char == "1"
+    if @save digit_yes digit_no_1
+    label digit_no_1
+
+    sum char == "2"
+    if @save digit_yes digit_no_2
+    label digit_no_2
+
+    sum char == "3"
+    if @save digit_yes digit_no_3
+    label digit_no_3
+
+    sum char == "4"
+    if @save digit_yes digit_no_4
+    label digit_no_4
+
+    sum char == "5"
+    if @save digit_yes digit_no_5
+    label digit_no_5
+
+    sum char == "6"
+    if @save digit_yes digit_no_6
+    label digit_no_6
+
+    sum char == "7"
+    if @save digit_yes digit_no_7
+    label digit_no_7
+
+    sum char == "8"
+    if @save digit_yes digit_no_8
+    label digit_no_8
+
+    sum char == "9"
+    if @save digit_yes digit_no_9
+    label digit_no_9
+
+    return 0
+    label digit_yes
+    return 1
+
+function test_for_symbol char
+    call test_for_digit char
+    if @save symbol_no symbol_digit_no
+    label symbol_digit_no
+    
+    sum char == "."
+    if @save symbol_no symbol_yes
+
+    label symbol_yes
+    return 1
+
+    label symbol_no
+    return 0
+
+function print_number input rows cols r start end
+    set i start
+    for print_number_loop print_number_loop_end i end
+        get input r i
+        say @save
+    continue print_number_loop
+    label print_number_loop_end
+    say "\n"
+    return
+label end
