@@ -1,0 +1,210 @@
+set current "AAA"
+set count 0
+table is_a 1
+table is_z 1
+
+label start
+sum current == "ZZZ"
+if @save algo_end algo_advance
+label algo_advance
+    sum count % m
+    get directions @save
+    call get_map input n current @save 9999999
+    set current @save
+    sum count + 1
+    set count @save
+    goto start
+label algo_end
+
+say "Part 1: "
+say count
+say "\n"
+
+set n_probes 0
+set i 0
+for n_probes_loop n_probes_loop_end i n
+    get input i 7
+    if @save is_start_probe is_start_probe_end
+    label is_start_probe
+        sum n_probes + 1
+        set n_probes @save
+    label is_start_probe_end
+continue n_probes_loop
+label n_probes_loop_end
+
+say "n_probes: "
+say n_probes
+say "\n"
+
+table probes n_probes
+table is_a n_probes
+table is_z n_probes
+table counts n_probes
+
+set i 0
+set j 0
+for init_probes init_probes_end i n
+    get input i 7
+    if @save init_this_key skip_this_key
+    label init_this_key
+        put is_a j 1
+        get input i 8
+        put is_z j @save
+        get input i 0
+        put probes j @save
+        sum j + 1
+        set j @save
+    label skip_this_key
+continue init_probes
+label init_probes_end
+
+set j 0
+for each_probe each_probe_end j n_probes
+    sum j + 1
+    say "Probe "
+    say @save
+    say ": \n"
+    get probes j
+    set current @save
+    set count 0
+    label multi_start
+    get is_z j
+    if @save multi_algo_end multi_algo_advance
+    label multi_algo_advance
+        sum count % m
+        get directions @save
+        call get_map input n current @save j
+        set current @save
+        sum count + 1
+        set count @save
+        goto multi_start
+    label multi_algo_end
+    put counts j count
+    say count
+    say "\n"
+continue each_probe
+label each_probe_end
+
+call lcm counts n_probes
+set count @save
+
+say "Part 2: "
+say count
+say "\n"
+
+goto end
+function get_map map map_length key direction idx
+    set start 0
+    set end map_length
+
+    label map_index_start
+        sum end - start
+        sum @save <= 0
+        if @save set_index set_index_end
+        label set_index
+            set i start
+            goto map_index_end
+        label set_index_end
+        sum start + end
+        set start_end_sum @save
+        sum start_end_sum % 2
+        if @save start_end_odd start_end_even
+        label start_end_odd
+            sum start_end_sum - 1
+            set start_end_sum @save
+        label start_end_even
+        sum start_end_sum / 2
+        set mid @save
+        get map mid 0
+        set mid_key @save
+        sum key == mid_key
+        if @save key_found key_not_found
+        label key_found
+            set i mid
+            goto map_index_end
+        label key_not_found
+        sum key < mid_key
+        if @save key_less key_greater
+        label key_less
+            set end mid
+        goto map_index_start
+        label key_greater
+            set start mid
+        goto map_index_start
+    label map_index_end
+
+    sum direction == "L"
+    if @save direction_left direction_right
+    label direction_left
+        get map i 3
+        set my_is_a @save
+        get map i 4
+        set my_is_z @save
+        get map i 1
+        set new_label @save
+    goto direction_end
+    label direction_right
+        get map i 5
+        set my_is_a @save
+        get map i 6
+        set my_is_z @save
+        get map i 2
+        set new_label @save
+    label direction_end
+    sum idx == 9999999
+    if @save no_idx yes_idx
+    label yes_idx
+        put is_a idx my_is_a
+        put is_z idx my_is_z
+    label no_idx
+    return new_label
+
+function check_all_true t n
+    set i 0
+    for check_all_true_loop check_all_true_loop_end i n
+        get t i
+        if @save check_all_true_continue check_all_true_break
+        label check_all_true_continue
+    continue check_all_true_loop
+    label check_all_true_loop_end
+    return 1
+    label check_all_true_break
+    return 0
+
+function lcm t n
+    set i 0
+    set current_lcm 1
+    for lcm_loop lcm_loop_end i n
+        get t i
+        call lcm_two current_lcm @save
+        set current_lcm @save
+    continue lcm_loop
+    label lcm_loop_end
+    return current_lcm
+
+function lcm_two a b
+    call gcd_two a b
+    sum a / @save
+    sum b * @save
+    return @save
+
+function gcd_two a b
+    sum b < a
+    if @save gcd_two_swap gcd_two_swap_end
+    label gcd_two_swap
+        set @save a
+        set a b
+        set b @save
+    label gcd_two_swap_end
+
+    label gcd_two_loop_start
+    sum a == 0
+    if @save gcd_two_loop_end gcd_two_continue
+    label gcd_two_continue
+    sum b % a
+    set b a
+    set a @save
+    goto gcd_two_loop_start
+    label gcd_two_loop_end
+    return b
+label end
